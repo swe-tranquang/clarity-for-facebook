@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           <span>Version {EXTENSION_VERSION}</span>
           <span>•</span>
           <a
-            href="https://github.com/hiki-studio/clarity-for-facebook"
+            href="https://github.com/swe-tranquang/clarity-for-facebook"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary-600 hover:text-primary-700 hover:underline"
@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
             Report Issue
           </a>
         </div>
-        <p className="text-xs text-gray-500">© {currentYear} Hiki Studio. Made with ❤️</p>
+        <p className="text-xs text-gray-500">© {currentYear} Swe TranQuang. Made with ❤️</p>
       </div>
     </div>
   );

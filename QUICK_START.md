@@ -19,7 +19,7 @@ That's it! Your Facebook feed is now clean.
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/hiki-studio/clarity-for-facebook.git
+git clone https://github.com/swe-tranquang/clarity-for-facebook.git
 cd clarity-for-facebook
 npm install
 
@@ -189,8 +189,8 @@ npm run clean           # Clean dist folder
 
 - 📖 [Full Documentation](README.md)
 - 👨‍💻 [Development Guide](DEVELOPMENT.md)
-- 🐛 [Report Issues](https://github.com/hiki-studio/clarity-for-facebook/issues)
-- 💬 [Discussions](https://github.com/hiki-studio/clarity-for-facebook/discussions)
+- 🐛 [Report Issues](https://github.com/swe-tranquang/clarity-for-facebook/issues)
+- 💬 [Discussions](https://github.com/swe-tranquang/clarity-for-facebook/discussions)
 
 ## Next Steps
 
@@ -201,6 +201,6 @@ npm run clean           # Clean dist folder
 
 ---
 
-Need help? Open an issue or email dev@hiki-studio.com
+Need help? Open an issue or email dev@swe-tranquang.com
 
 Happy coding! 🚀

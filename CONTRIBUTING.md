@@ -106,7 +106,7 @@ git clone https://github.com/YOUR_USERNAME/clarity-for-facebook.git
 cd clarity-for-facebook
 
 # Add upstream remote
-git remote add upstream https://github.com/hiki-studio/clarity-for-facebook.git
+git remote add upstream https://github.com/swe-tranquang/clarity-for-facebook.git
 
 # Install dependencies
 npm install
@@ -300,9 +300,9 @@ src/
 
 ## Getting Help
 
-- **Discord**: [Join our community](https://discord.gg/hiki-studio)
-- **GitHub Discussions**: [Ask questions](https://github.com/hiki-studio/clarity-for-facebook/discussions)
-- **Email**: dev@hiki-studio.com
+- **Discord**: [Join our community](https://discord.gg/swe-tranquang)
+- **GitHub Discussions**: [Ask questions](https://github.com/swe-tranquang/clarity-for-facebook/discussions)
+- **Email**: dev@swe-tranquang.com
 
 ## Recognition
 

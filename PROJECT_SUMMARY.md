@@ -362,8 +362,8 @@ Before publishing to stores:
 
 ## 📞 Support & Contact
 
-- **GitHub Issues**: https://github.com/hiki-studio/clarity-for-facebook/issues
-- **Email**: dev@hiki-studio.com
+- **GitHub Issues**: https://github.com/swe-tranquang/clarity-for-facebook/issues
+- **Email**: dev@swe-tranquang.com
 - **Documentation**: See README.md and DEVELOPMENT.md
 
 ## 🎉 Congratulations!

@@ -41,7 +41,7 @@ class BackgroundService {
 
       // Open welcome page
       await browser.tabs.create({
-        url: 'https://github.com/hiki-studio/clarity-for-facebook',
+        url: 'https://github.com/swe-tranquang/clarity-for-facebook',
       });
     } else if (details.reason === 'update') {
       console.log('Clarity for Facebook: Extension updated');

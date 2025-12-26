@@ -2,7 +2,7 @@
   "name": "clarity-for-facebook",
   "version": "1.0.0",
   "description": "A cross-platform browser extension to clean up your Facebook feed by filtering unwanted content",
-  "author": "Hiki Studio",
+  "author": "Swe TranQuang",
   "license": "MIT",
   "scripts": {
     "dev": "webpack --mode development --watch",

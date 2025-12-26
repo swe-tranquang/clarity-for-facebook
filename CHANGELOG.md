@@ -52,5 +52,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-For more details, see [GitHub Releases](https://github.com/hiki-studio/clarity-for-facebook/releases).
+For more details, see [GitHub Releases](https://github.com/swe-tranquang/clarity-for-facebook/releases).
 

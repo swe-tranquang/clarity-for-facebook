@@ -30,7 +30,7 @@ Ensure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/hiki-studio/clarity-for-facebook.git
+git clone https://github.com/swe-tranquang/clarity-for-facebook.git
 cd clarity-for-facebook
 
 # Install dependencies
@@ -462,7 +462,7 @@ changes
 
 - Open an issue on GitHub
 - Join our Discord community
-- Email: dev@hiki-studio.com
+- Email: dev@swe-tranquang.com
 
 ---
 
