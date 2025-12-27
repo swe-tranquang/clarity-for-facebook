@@ -6,14 +6,28 @@ import './styles.css';
 /**
  * Initialize popup React application
  */
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <Popup />
-    </React.StrictMode>
-  );
+function initPopup() {
+  const container = document.getElementById('root');
+
+  if (container) {
+    try {
+      const root = createRoot(container);
+      root.render(
+        <React.StrictMode>
+          <Popup />
+        </React.StrictMode>
+      );
+    } catch (error) {
+      console.error('[Popup] ❌ Error during React initialization:', error);
+    }
+  } else {
+    console.error('[Popup] ❌ Root element not found!');
+  }
+}
+
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPopup);
 } else {
-  console.error('Root element not found');
+  initPopup();
 }

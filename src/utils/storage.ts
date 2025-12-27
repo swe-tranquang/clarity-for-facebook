@@ -11,20 +11,29 @@ export class StorageService {
    * Get all settings from storage
    */
   static async getSettings(): Promise<ExtensionSettings> {
+    console.log('[StorageService] 📥 getSettings called');
     try {
+      console.log('[StorageService] 🔍 Reading from browser.storage.sync...');
       const result = await browser.storage.sync.get(STORAGE_KEYS.SETTINGS);
+      console.log('[StorageService] 📦 Storage result:', result);
+
       const settings = result[STORAGE_KEYS.SETTINGS] as ExtensionSettings | undefined;
-      
+      console.log('[StorageService] ⚙️ Parsed settings:', settings);
+
       if (!settings) {
+        console.log('[StorageService] 🆕 No settings found, using defaults');
         // First time usage, save default settings
         await this.saveSettings(DEFAULT_SETTINGS);
         return DEFAULT_SETTINGS;
       }
-      
+
       // Merge with defaults to handle new features
-      return { ...DEFAULT_SETTINGS, ...settings };
+      const mergedSettings = { ...DEFAULT_SETTINGS, ...settings };
+      console.log('[StorageService] ✅ Returning merged settings:', mergedSettings);
+      return mergedSettings;
     } catch (error) {
-      console.error('Failed to get settings:', error);
+      console.error('[StorageService] ❌ Failed to get settings:', error);
+      console.log('[StorageService] 🔄 Returning default settings');
       return DEFAULT_SETTINGS;
     }
   }
@@ -33,17 +42,24 @@ export class StorageService {
    * Save settings to storage
    */
   static async saveSettings(settings: ExtensionSettings): Promise<void> {
+    console.log('[StorageService] 💾 saveSettings called with:', settings);
     try {
       const updatedSettings: ExtensionSettings = {
         ...settings,
         lastUpdated: Date.now(),
       };
-      
+      console.log(
+        '[StorageService] ⏰ Updated settings with timestamp:',
+        updatedSettings
+      );
+
+      console.log('[StorageService] 📝 Writing to browser.storage.sync...');
       await browser.storage.sync.set({
         [STORAGE_KEYS.SETTINGS]: updatedSettings,
       });
+      console.log('[StorageService] ✅ Settings saved successfully');
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      console.error('[StorageService] ❌ Failed to save settings:', error);
       throw error;
     }
   }
@@ -86,22 +102,20 @@ export class StorageService {
     if (!data.settings) {
       throw new Error('Invalid export data');
     }
-    
+
     // Validate data structure
     const validatedSettings: ExtensionSettings = {
       ...DEFAULT_SETTINGS,
       ...data.settings,
     };
-    
+
     await this.saveSettings(validatedSettings);
   }
 
   /**
    * Listen to storage changes
    */
-  static addChangeListener(
-    callback: (settings: ExtensionSettings) => void
-  ): void {
+  static addChangeListener(callback: (settings: ExtensionSettings) => void): void {
     browser.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'sync' && changes[STORAGE_KEYS.SETTINGS]) {
         const newSettings = changes[STORAGE_KEYS.SETTINGS].newValue as ExtensionSettings;
@@ -110,4 +124,3 @@ export class StorageService {
     });
   }
 }
-

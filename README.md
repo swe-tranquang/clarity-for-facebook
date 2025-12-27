@@ -24,7 +24,8 @@ A powerful, cross-platform browser extension that gives you control over what yo
 ### For Users
 
 #### Chrome/Edge
-1. Download the latest release from [Releases](https://github.com/hiki-studio/clarity-for-facebook/releases)
+
+1. Download the latest release from [Releases](https://github.com/swe-tranquang/clarity-for-facebook/releases)
 2. Unzip the downloaded file
 3. Open Chrome/Edge and go to `chrome://extensions/` or `edge://extensions/`
 4. Enable "Developer mode" in the top right
@@ -32,7 +33,8 @@ A powerful, cross-platform browser extension that gives you control over what yo
 6. The extension icon should appear in your toolbar
 
 #### Firefox
-1. Download the `.xpi` file from [Releases](https://github.com/hiki-studio/clarity-for-facebook/releases)
+
+1. Download the `.xpi` file from [Releases](https://github.com/swe-tranquang/clarity-for-facebook/releases)
 2. Open Firefox and go to `about:addons`
 3. Click the gear icon and select "Install Add-on From File"
 4. Select the downloaded `.xpi` file
@@ -68,7 +70,7 @@ See [Development Guide](#-development) below.
 
 ```bash
 # Clone the repository
-git clone https://github.com/hiki-studio/clarity-for-facebook.git
+git clone https://github.com/swe-tranquang/clarity-for-facebook.git
 cd clarity-for-facebook
 
 # Install dependencies
@@ -140,16 +142,19 @@ npm run clean              # Clean dist folder
 ### Development Workflow
 
 1. **Start Development Mode**
+
    ```bash
    npm run dev
    ```
 
 2. **Load Extension in Browser**
+
    - Chrome: Go to `chrome://extensions/`, enable "Developer mode", click "Load unpacked", select `dist/chrome`
    - Firefox: Go to `about:debugging#/runtime/this-firefox`, click "Load Temporary Add-on", select `manifest.json` from `dist/firefox`
    - Edge: Same as Chrome, but use `edge://extensions/`
 
 3. **Make Changes**
+
    - Edit files in the `src/` directory
    - Webpack will automatically rebuild
    - Reload the extension in your browser to see changes
@@ -194,18 +199,21 @@ cd dist/edge && zip -r ../edge-extension.zip . && cd ../..
 ### Key Design Patterns
 
 #### Content Script
+
 - Uses MutationObserver to detect new content
 - Implements throttling and debouncing for performance
 - Batch processing to minimize DOM operations
 - Smart element detection with multilingual support
 
 #### Storage Service
+
 - Centralized settings management
 - Uses browser.storage.sync for cross-device sync
 - Export/Import functionality for backup
 - Type-safe operations with TypeScript
 
 #### Component Architecture
+
 - Functional components with React hooks
 - Separation of concerns (UI/Logic/API)
 - Reusable components with clear props interfaces
@@ -224,11 +232,13 @@ cd dist/edge && zip -r ../edge-extension.zip . && cd ../..
 ### Adding New Features
 
 1. **Add Type Definition** (`src/types/index.ts`)
+
 ```typescript
 export type FeatureKey = 'newFeature' | /* existing types */;
 ```
 
 2. **Update Constants** (`src/constants/index.ts`)
+
 ```typescript
 export const FEATURES: Feature[] = [
   {
@@ -243,6 +253,7 @@ export const FEATURES: Feature[] = [
 ```
 
 3. **Implement Detection** (`src/content/contentScript.ts`)
+
 ```typescript
 private isNewFeature(element: Element): boolean {
   // Detection logic
@@ -319,9 +330,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/hiki-studio/clarity-for-facebook/issues)
-- **Email**: support@hiki-studio.com
-- **Website**: [hiki-studio.com](https://hiki-studio.com)
+- **Issues**: [GitHub Issues](https://github.com/swe-tranquang/clarity-for-facebook/issues)
+- **Email**: support@swe-tranquang.com
+- **Website**: [swe-tranquang.com](https://swe-tranquang.com)
 
 ## 🗺️ Roadmap
 
@@ -335,7 +346,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [Hiki Studio](https://hiki-studio.com)
+Made with ❤️ by [swe-tranquang](https://swe-tranquang.com)
 
 ⭐ Star this repo if you find it useful!
-

@@ -1,0 +1,25 @@
+/**
+ * Clarity for Facebook - Post visibility CSS
+ * Uses smooth transition for hiding to minimize visual disruption
+ */
+
+/* Hidden posts - smooth fade out then display none */
+.clarity-hidden {
+  opacity: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.15s ease-out, max-height 0.15s ease-out !important;
+}
+
+/* After transition, completely remove from layout */
+.clarity-hidden[data-clarity-removed='true'] {
+  display: none !important;
+}
+
+/* Approved posts - ensure they're visible */
+.clarity-approved {
+  opacity: 1 !important;
+}

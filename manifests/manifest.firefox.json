@@ -3,7 +3,7 @@
     "name": "Clarity for Facebook",
     "version": "1.0.0",
     "description": "Clean up your Facebook feed by removing unwanted content like Reels, sponsored posts, and suggestions.",
-    "author": "Hiki Studio",
+    "author": "swe-tranquang",
     "icons": {
         "16": "icons/icon-16.png",
         "32": "icons/icon-32.png",
@@ -33,6 +33,9 @@
                 "*://*.facebook.com/*",
                 "*://*.fb.com/*"
             ],
+            "css": [
+                "content.css"
+            ],
             "js": [
                 "content.js"
             ],
@@ -50,7 +53,7 @@
     ],
     "browser_specific_settings": {
         "gecko": {
-            "id": "clarity-for-facebook@hiki-studio.com",
+            "id": "clarity-for-facebook@swe-tranquang.com",
             "strict_min_version": "109.0"
         }
     }

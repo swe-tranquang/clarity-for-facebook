@@ -1,3 +1,5 @@
+console.log('[Clarity] 🚀 Background service starting...');
+
 import browser from 'webextension-polyfill';
 import { StorageService } from '@/utils/storage';
 import { MessageType } from '@/types';
@@ -24,7 +26,7 @@ class BackgroundService {
     // Handle storage changes
     browser.storage.onChanged.addListener(this.handleStorageChange.bind(this));
 
-    console.log('Clarity for Facebook: Background service initialized');
+    console.log('[Clarity] ✅ Background service initialized');
   }
 
   /**
@@ -34,18 +36,16 @@ class BackgroundService {
     details: browser.Runtime.OnInstalledDetailsType
   ): Promise<void> {
     if (details.reason === 'install') {
-      console.log('Clarity for Facebook: Extension installed');
-
       // Initialize default settings
       await StorageService.resetSettings();
 
       // Open welcome page
       await browser.tabs.create({
-        url: 'https://github.com/hiki-studio/clarity-for-facebook',
+        url: 'https://github.com/swe-tranquang/clarity-for-facebook',
       });
-    } else if (details.reason === 'update') {
-      console.log('Clarity for Facebook: Extension updated');
 
+      console.log('[Clarity] 🎉 Extension installed');
+    } else if (details.reason === 'update') {
       // Reload all Facebook tabs to apply updates
       const tabs = await browser.tabs.query({
         url: ['*://*.facebook.com/*', '*://*.fb.com/*'],
@@ -56,6 +56,8 @@ class BackgroundService {
           browser.tabs.reload(tab.id);
         }
       }
+
+      console.log('[Clarity] 🔄 Extension updated');
     }
   }
 
@@ -64,10 +66,8 @@ class BackgroundService {
    */
   private handleMessage(
     message: { type: MessageType; payload?: unknown },
-    sender: browser.Runtime.MessageSender
+    _sender: browser.Runtime.MessageSender
   ): Promise<unknown> | void {
-    console.log('Background received message:', message.type);
-
     switch (message.type) {
       case MessageType.GET_SETTINGS:
         return StorageService.getSettings();
@@ -97,8 +97,6 @@ class BackgroundService {
     areaName: string
   ): Promise<void> {
     if (areaName === 'sync') {
-      console.log('Settings changed, notifying content scripts');
-
       // Notify all Facebook tabs about settings change
       const tabs = await browser.tabs.query({
         url: ['*://*.facebook.com/*', '*://*.fb.com/*'],
