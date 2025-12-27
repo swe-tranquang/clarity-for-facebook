@@ -62,8 +62,8 @@ export const FeatureToggle: React.FC<FeatureToggleProps> = ({
   return (
     <div
       className={`group relative overflow-hidden rounded-lg border transition-all duration-200 ${isEnabled
-          ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
-          : 'bg-white border-gray-200'
+        ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
+        : 'bg-white border-gray-200'
         } ${isCleanMode ? 'mb-3 border-2' : 'mb-2'} ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md hover:border-blue-300 cursor-pointer'
         }`}
       onClick={handleToggle}
@@ -83,8 +83,8 @@ export const FeatureToggle: React.FC<FeatureToggleProps> = ({
           <div className="flex items-center space-x-3 flex-1 min-w-0">
             {/* Icon container */}
             <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 ${isEnabled
-                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-500'
+              ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-500'
               }`}>
               <FeatureIcon featureKey={feature.key} className="w-5 h-5" />
             </div>
@@ -104,22 +104,15 @@ export const FeatureToggle: React.FC<FeatureToggleProps> = ({
           </div>
 
           {/* Toggle switch */}
-          <label className="toggle-switch ml-3 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <label className="toggle-switch ml-3" onClick={(e) => e.stopPropagation()}>
             <input
               type="checkbox"
               checked={isEnabled}
               onChange={handleToggle}
               disabled={isDisabled}
               aria-label={`Toggle ${feature.label}`}
-              className="sr-only"
             />
-            <span className={`toggle-slider block w-11 h-6 rounded-full transition-all duration-200 ${isEnabled
-                ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
-                : 'bg-gray-300'
-              }`}>
-              <span className={`block w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-200 ${isEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                } mt-0.5`} />
-            </span>
+            <span className="toggle-slider" />
           </label>
         </div>
       </div>
