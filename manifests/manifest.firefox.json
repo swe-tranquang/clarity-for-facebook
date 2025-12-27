@@ -18,13 +18,10 @@
             "48": "icons/icon-48.png",
             "128": "icons/icon-128.png"
         },
-        "default_title": "Clarity for Facebook",
-        "browser_style": false
+        "default_title": "Clarity for Facebook"
     },
     "background": {
-        "scripts": [
-            "background.js"
-        ],
+        "service_worker": "background.js",
         "type": "module"
     },
     "content_scripts": [
@@ -44,17 +41,31 @@
         }
     ],
     "permissions": [
-        "storage",
-        "tabs"
+        "storage"
+    ],
+    "optional_permissions": [
+        "notifications"
     ],
     "host_permissions": [
         "*://*.facebook.com/*",
         "*://*.fb.com/*"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "icons/*"
+            ],
+            "matches": [
+                "*://*.facebook.com/*",
+                "*://*.fb.com/*"
+            ]
+        }
     ],
     "browser_specific_settings": {
         "gecko": {
             "id": "clarity-for-facebook@swe-tranquang.com",
             "strict_min_version": "109.0"
         }
-    }
+    },
+    "homepage_url": "https://github.com/swe-tranquang/clarity-for-facebook"
 }
