@@ -1,8 +1,11 @@
 import browser from 'webextension-polyfill';
-import type { ExtensionSettings } from '@/types';
-import type { FeatureContext } from './types';
+import type { ExtensionSettings, FeatureContext } from '@/types';
 import { BaseFeature, createFeatures } from './features';
-import { SettingsService, ObserverService, PostParserService, StyleInjectorService } from './services';
+
+import { SettingsService } from './services/settings.service';
+import { ObserverService } from './services/observer.service';
+import { PostParserService } from './services/post-parser.service';
+import { StyleInjectorService } from './services/style-injector.service';
 
 /**
  * Main content script class for Facebook content filtering
@@ -121,13 +124,18 @@ class ClarityContentScript {
    * Sync feature states with settings
    */
   private syncFeatureStates(settings: ExtensionSettings): void {
+    // cleanMode acts as master switch - if off, all features are disabled
+    const masterEnabled = settings.cleanMode;
+
     for (const feature of this.features) {
-      const enabled = settings[feature.key] as boolean;
-      feature.setEnabled(enabled);
+      const featureEnabled = settings[feature.key] as boolean;
+      // Feature is only enabled if both master switch AND individual feature are on
+      feature.setEnabled(masterEnabled && featureEnabled);
     }
 
-    // Update style injector when settings change
-    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored, settings.removeStories);
+    // Update style injector - also respect cleanMode
+    const storiesEnabled = masterEnabled && settings.removeStories;
+    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored, storiesEnabled);
   }
 
   /**

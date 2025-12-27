@@ -1,6 +1,3 @@
-/**
- * Feature identifiers for Facebook content filtering
- */
 export type FeatureKey =
   | 'cleanMode'
   | 'removeStories'
@@ -9,11 +6,9 @@ export type FeatureKey =
   | 'removeSuggested'
   | 'removeMarketplace'
   | 'removeSearchAds'
-  | 'removePeopleYouMayKnow';
+  | 'removePeopleYouMayKnow'
+  | 'removeGroupSuggestions';
 
-/**
- * Feature configuration with metadata
- */
 export interface Feature {
   key: FeatureKey;
   label: string;
@@ -21,9 +16,6 @@ export interface Feature {
   enabled: boolean;
 }
 
-/**
- * User settings stored in browser storage
- */
 export interface ExtensionSettings {
   cleanMode: boolean;
   removeStories: boolean;
@@ -33,12 +25,10 @@ export interface ExtensionSettings {
   removeMarketplace: boolean;
   removeSearchAds: boolean;
   removePeopleYouMayKnow: boolean;
+  removeGroupSuggestions: boolean;
   lastUpdated: number;
 }
 
-/**
- * Message types for communication between components
- */
 export enum MessageType {
   SETTINGS_UPDATED = 'SETTINGS_UPDATED',
   GET_SETTINGS = 'GET_SETTINGS',
@@ -47,17 +37,11 @@ export enum MessageType {
   RESET_SETTINGS = 'RESET_SETTINGS',
 }
 
-/**
- * Message structure for extension communication
- */
 export interface ExtensionMessage<T = unknown> {
   type: MessageType;
   payload?: T;
 }
 
-/**
- * Statistics for monitoring extension performance
- */
 export interface FilterStats {
   reelsRemoved: number;
   sponsoredRemoved: number;
@@ -66,9 +50,6 @@ export interface FilterStats {
   lastReset: number;
 }
 
-/**
- * Export/Import data structure
- */
 export interface ExportData {
   version: string;
   exportDate: number;

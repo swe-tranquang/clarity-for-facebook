@@ -1,5 +1,4 @@
-import type { FeatureKey } from '@/types';
-import type { FeatureContext } from '../types';
+import type { FeatureKey, FeatureContext } from '@/types';
 import { BaseFeature } from './base.feature';
 
 /**
@@ -15,12 +14,7 @@ export class ReelsFeature extends BaseFeature {
   }
 
   process(context: FeatureContext): void {
-    const author = context.parsedPost.author || 'Unknown';
     const el = context.postElement as HTMLElement;
-
-    // Use display:none instead of remove() to prevent layout shift
     el.style.display = 'none';
-
-    console.log(`[Clarity] 🎬 Hidden Reels post from: ${author}`);
   }
 }

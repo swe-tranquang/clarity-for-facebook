@@ -1,21 +1,12 @@
 import type { ExtensionSettings, Feature } from '@/types';
 
-/**
- * Extension version
- */
 export const EXTENSION_VERSION = '1.0.0';
 
-/**
- * Storage keys
- */
 export const STORAGE_KEYS = {
   SETTINGS: 'clarity_settings',
   STATS: 'clarity_stats',
 } as const;
 
-/**
- * Default settings for the extension
- */
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   cleanMode: false,
   removeStories: true,
@@ -25,12 +16,10 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   removeMarketplace: true,
   removeSearchAds: true,
   removePeopleYouMayKnow: true,
+  removeGroupSuggestions: true,
   lastUpdated: Date.now(),
 };
 
-/**
- * Feature configurations with metadata
- */
 export const FEATURES: Feature[] = [
   {
     key: 'cleanMode',
@@ -78,6 +67,12 @@ export const FEATURES: Feature[] = [
     key: 'removePeopleYouMayKnow',
     label: 'Remove People You May Know',
     description: 'Hide friend suggestions',
+    enabled: true,
+  },
+  {
+    key: 'removeGroupSuggestions',
+    label: 'Remove Group Suggestions',
+    description: 'Hide group suggestions',
     enabled: true,
   },
 ];
