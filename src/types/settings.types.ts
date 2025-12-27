@@ -3,6 +3,7 @@
  */
 export type FeatureKey =
   | 'cleanMode'
+  | 'removeStories'
   | 'removeReels'
   | 'removeSponsored'
   | 'removeSuggested'
@@ -17,7 +18,6 @@ export type FeatureKey =
 export interface Feature {
   key: FeatureKey;
   label: string;
-  icon: string;
   description: string;
   enabled: boolean;
 }
@@ -27,6 +27,7 @@ export interface Feature {
  */
 export interface ExtensionSettings {
   cleanMode: boolean;
+  removeStories: boolean;
   removeReels: boolean;
   removeSponsored: boolean;
   removeSuggested: boolean;
