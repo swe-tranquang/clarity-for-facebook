@@ -38,7 +38,7 @@ class ClarityContentScript {
     const settings = await this.settingsService.loadSettings();
 
     // 1.5. Update style injector with initial settings
-    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored);
+    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored, settings.removeStories);
 
     // 2. Initialize features
     this.features = createFeatures();
@@ -127,7 +127,7 @@ class ClarityContentScript {
     }
 
     // Update style injector when settings change
-    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored);
+    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored, settings.removeStories);
   }
 
   /**
