@@ -152,7 +152,6 @@ class ClarityContentScript {
    * Manually trigger a rescan
    */
   public rescan(): void {
-    console.log('[Clarity] 🔄 Manual rescan triggered');
     this.processedPosts = new WeakSet<Element>();
     this.processAllPosts();
   }
