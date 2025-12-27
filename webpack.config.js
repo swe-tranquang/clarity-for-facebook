@@ -78,6 +78,11 @@ module.exports = (env, argv) => {
             noErrorOnMissing: true,
           },
           {
+            from: 'src/content/content.css',
+            to: 'content.css',
+            noErrorOnMissing: false,
+          },
+          {
             from: `manifests/manifest.${targetBrowser}.json`,
             to: 'manifest.json',
             noErrorOnMissing: false,

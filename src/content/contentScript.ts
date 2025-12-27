@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import type { ExtensionSettings } from '@/types';
 import type { FeatureContext } from './types';
 import { BaseFeature, createFeatures } from './features';
-import { SettingsService, ObserverService, PostParserService } from './services';
+import { SettingsService, ObserverService, PostParserService, StyleInjectorService } from './services';
 
 /**
  * Main content script class for Facebook content filtering
@@ -13,6 +13,7 @@ class ClarityContentScript {
   private settingsService = new SettingsService();
   private parserService = new PostParserService();
   private observerService = new ObserverService();
+  private styleInjector = new StyleInjectorService();
   private processedPosts = new WeakSet<Element>();
   private isInitialized = false;
 
@@ -30,8 +31,14 @@ class ClarityContentScript {
 
     console.log('[Clarity] 🚀 Initializing content script...');
 
+    // 0. Initialize style injector FIRST (before any content renders)
+    this.styleInjector.init();
+
     // 1. Load settings
     const settings = await this.settingsService.loadSettings();
+
+    // 1.5. Update style injector with initial settings
+    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored);
 
     // 2. Initialize features
     this.features = createFeatures();
@@ -84,19 +91,24 @@ class ClarityContentScript {
           source: parsedPost.source,
           content: parsedPost.content?.slice(0, 100),
         });
-      } else {
-        // Log unparseable posts for debugging
-        const textPreview = postElement.textContent?.slice(0, 100)?.replace(/\s+/g, ' ') || '';
-        console.log(`[Clarity] ⚠️ Unparsed post - Source: ${parsedPost.source}, Preview: ${textPreview}...`);
       }
 
-      // Run all enabled features
+      // Run all enabled features to check if post should be hidden
+      let shouldHide = false;
       for (const feature of this.features) {
-        const wasProcessed = feature.execute(context);
-        if (wasProcessed) {
-          // Feature removed/modified the post, no need to continue
+        const wasFiltered = feature.execute(context);
+        if (wasFiltered) {
+          // Feature decided to hide this post
+          shouldHide = true;
           break;
         }
+      }
+
+      // Apply visibility - either hide permanently or approve to show
+      if (shouldHide) {
+        this.styleInjector.markAsHidden(postElement);
+      } else {
+        this.styleInjector.markAsApproved(postElement);
       }
     }
 
@@ -113,6 +125,9 @@ class ClarityContentScript {
       const enabled = settings[feature.key] as boolean;
       feature.setEnabled(enabled);
     }
+
+    // Update style injector when settings change
+    this.styleInjector.updateHiddenTypes(settings.removeSuggested, settings.removeSponsored);
   }
 
   /**

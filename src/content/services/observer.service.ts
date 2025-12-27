@@ -2,10 +2,12 @@ import { OBSERVER_CONFIG } from '@/constants';
 
 /**
  * MutationObserver service for detecting DOM changes
+ * Uses fast processing without pre-hide (to avoid breaking feed)
  */
 export class ObserverService {
   private observer: MutationObserver | null = null;
-  private scanTimeout: ReturnType<typeof setTimeout> | null = null;
+  private processCallback: (() => void) | null = null;
+  private frameRequested = false;
 
   /**
    * Start observing DOM changes
@@ -16,6 +18,7 @@ export class ObserverService {
       return;
     }
 
+    this.processCallback = onNewContent;
     console.log('[Clarity] 🔄 Starting MutationObserver...');
 
     this.observer = new MutationObserver((mutations) => {
@@ -35,11 +38,14 @@ export class ObserverService {
       }
 
       if (hasNewContent) {
-        // Debounce the callback - use short delay for faster processing
-        if (this.scanTimeout) {
-          clearTimeout(this.scanTimeout);
+        // Process immediately using requestAnimationFrame (faster than setTimeout)
+        if (!this.frameRequested) {
+          this.frameRequested = true;
+          requestAnimationFrame(() => {
+            this.frameRequested = false;
+            this.processCallback?.();
+          });
         }
-        this.scanTimeout = setTimeout(onNewContent, 100);
       }
     });
 
@@ -53,7 +59,7 @@ export class ObserverService {
           console.log('[Clarity] ✅ Observer attached to document.body');
           clearInterval(waitForBody);
         }
-      }, 100);
+      }, 10);
     }
   }
 
@@ -66,10 +72,7 @@ export class ObserverService {
       this.observer = null;
       console.log('[Clarity] 🛑 Observer stopped');
     }
-
-    if (this.scanTimeout) {
-      clearTimeout(this.scanTimeout);
-      this.scanTimeout = null;
-    }
+    this.processCallback = null;
+    this.frameRequested = false;
   }
 }
