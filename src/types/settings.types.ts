@@ -9,7 +9,6 @@ export type FeatureKey =
   | 'removeSuggested'
   | 'removeMarketplace'
   | 'removeSearchAds'
-  | 'removeFollowSuggestions'
   | 'removePeopleYouMayKnow';
 
 /**
@@ -33,7 +32,6 @@ export interface ExtensionSettings {
   removeSuggested: boolean;
   removeMarketplace: boolean;
   removeSearchAds: boolean;
-  removeFollowSuggestions: boolean;
   removePeopleYouMayKnow: boolean;
   lastUpdated: number;
 }

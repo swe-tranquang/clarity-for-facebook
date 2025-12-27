@@ -24,7 +24,6 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   removeSuggested: true,
   removeMarketplace: true,
   removeSearchAds: true,
-  removeFollowSuggestions: true,
   removePeopleYouMayKnow: true,
   lastUpdated: Date.now(),
 };
@@ -73,12 +72,6 @@ export const FEATURES: Feature[] = [
     key: 'removeSearchAds',
     label: 'Remove Search Ads',
     description: 'Hide sponsored results in search',
-    enabled: true,
-  },
-  {
-    key: 'removeFollowSuggestions',
-    label: 'Remove Follow Suggestions',
-    description: 'Hide "Follow" button suggestions',
     enabled: true,
   },
   {

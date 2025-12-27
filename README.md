@@ -346,6 +346,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [Swe TranQuang](https://swe-tranquang.com)
+Made with ❤️ by [swe-tranquang](https://swe-tranquang.com)
 
 ⭐ Star this repo if you find it useful!

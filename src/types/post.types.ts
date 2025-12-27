@@ -1,7 +1,7 @@
 /**
  * Source of the post in Facebook feed
  */
-export type PostSource = 'following' | 'suggested' | 'sponsored';
+export type PostSource = 'following' | 'suggested' | 'sponsored' | 'reels';
 
 /**
  * Interface for parsed Facebook post data

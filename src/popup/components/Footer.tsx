@@ -55,7 +55,7 @@ export const Footer: React.FC = () => {
         {/* Bottom row: Author info */}
         <div className="text-center">
           <p className="text-xs text-gray-500 flex items-center justify-center space-x-1.5">
-            <span>© {currentYear} Swe TranQuang</span>
+            <span>© {currentYear} swe-tranquang</span>
             <span>•</span>
             <span className="flex items-center space-x-1">
               <span>Made with</span>

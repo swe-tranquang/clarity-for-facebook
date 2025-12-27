@@ -4,19 +4,23 @@ import { BaseFeature } from './base.feature';
 
 /**
  * Feature to remove Reels from the feed
- * TODO: Implement actual detection logic for Reels
+ * Detects posts with source === 'reels' and hides them
  */
 export class ReelsFeature extends BaseFeature {
   readonly key: FeatureKey = 'removeReels';
   readonly name = 'Remove Reels';
 
-  shouldProcess(_context: FeatureContext): boolean {
-    // TODO: Implement actual detection logic
-    // Reels typically have specific selectors or attributes
-    return false;
+  shouldProcess(context: FeatureContext): boolean {
+    return context.parsedPost.source === 'reels';
   }
 
   process(context: FeatureContext): void {
-    console.log(`[Clarity] 🎬 Would remove Reels from: ${context.parsedPost.author || 'Unknown'}`);
+    const author = context.parsedPost.author || 'Unknown';
+    const el = context.postElement as HTMLElement;
+
+    // Use display:none instead of remove() to prevent layout shift
+    el.style.display = 'none';
+
+    console.log(`[Clarity] 🎬 Hidden Reels post from: ${author}`);
   }
 }

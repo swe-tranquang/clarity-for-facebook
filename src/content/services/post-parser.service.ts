@@ -1,4 +1,4 @@
-import { FEED_HEADER_TEXTS, FOLLOW_BUTTON_TEXTS, SPONSORED_TEXTS, matchesAny, matchesExact } from '@/constants';
+import { FEED_HEADER_TEXTS, FOLLOW_BUTTON_TEXTS, SPONSORED_TEXTS, SUGGESTED_FOR_YOU_TEXTS, matchesAny, matchesExact } from '@/constants';
 import type { ParsedPost, PostSource } from '@/types';
 
 /**
@@ -6,16 +6,33 @@ import type { ParsedPost, PostSource } from '@/types';
  */
 export class PostParserService {
   /**
-   * Detect the source of a post (following, suggested, or sponsored)
+   * Detect the source of a post (following, suggested, sponsored, or reels)
    */
   detectPostSource(postElement: Element): PostSource {
+    // Check for Reels first (h3 with "Reels" text)
+    const h3Elements = postElement.querySelectorAll('h3');
+    for (const h3 of h3Elements) {
+      const text = h3.textContent?.trim();
+      if (text === 'Reels') {
+        return 'reels';
+      }
+    }
+
     const allSpans = postElement.querySelectorAll('span');
 
-    // Check for sponsored indicators first
+    // Check for sponsored indicators
     for (const span of allSpans) {
       const text = span.textContent?.trim();
       if (matchesExact(text, SPONSORED_TEXTS)) {
         return 'sponsored';
+      }
+    }
+
+    // Check for "Suggested for you" text
+    for (const span of allSpans) {
+      const text = span.textContent?.trim();
+      if (matchesExact(text, SUGGESTED_FOR_YOU_TEXTS)) {
+        return 'suggested';
       }
     }
 

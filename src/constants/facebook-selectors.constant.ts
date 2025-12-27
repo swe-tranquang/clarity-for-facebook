@@ -113,6 +113,58 @@ export const SPONSORED_TEXTS = [
 ];
 
 /**
+ * "Suggested for you" text variations (indicates suggested posts)
+ */
+export const SUGGESTED_FOR_YOU_TEXTS = [
+  // English
+  'suggested for you',
+  'your group suggestions',
+  // Vietnamese
+  'gợi ý cho bạn',
+  'đề xuất cho bạn',
+  'gợi ý nhóm cho bạn',
+  // Chinese (Simplified)
+  '为你推荐',
+  '推荐给你',
+  '你的群组推荐',
+  // Chinese (Traditional)
+  '為你推薦',
+  '推薦給你',
+  '你的社團推薦',
+  // Japanese
+  'おすすめ',
+  'あなたへのおすすめ',
+  'おすすめのグループ',
+  // Korean
+  '회원님을 위한 추천',
+  '추천',
+  '그룹 추천',
+  // Spanish
+  'sugerido para ti',
+  'sugerencias para ti',
+  'sugerencias de grupos',
+  // French
+  'suggestions pour vous',
+  'suggéré pour vous',
+  'suggestions de groupes',
+  // German
+  'vorschläge für dich',
+  'für dich vorgeschlagen',
+  'gruppenvorschläge',
+  // Portuguese
+  'sugestão para você',
+  'sugerido para você',
+  'sugestões de grupos',
+  // Thai
+  'แนะนำสำหรับคุณ',
+  'กลุ่มแนะนำของคุณ',
+  // Indonesian
+  'disarankan untuk anda',
+  'saran untuk anda',
+  'saran grup anda',
+];
+
+/**
  * Check if text matches any of the provided patterns (case-insensitive)
  */
 export function matchesAny(text: string | null | undefined, patterns: string[]): boolean {
