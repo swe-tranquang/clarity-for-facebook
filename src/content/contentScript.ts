@@ -1,381 +1,289 @@
 import browser from 'webextension-polyfill';
-import type { ExtensionSettings } from '@/types';
-import { StorageService } from '@/utils/storage';
-import {
-  debounce,
-  throttle,
-  containsText,
-  hideElement,
-  showElement,
-  isHiddenByExtension,
-  findClosestParent,
-} from '@/utils/helpers';
-import { FACEBOOK_SELECTORS, OBSERVER_CONFIG, PERFORMANCE_CONFIG } from '@/constants';
+import { OBSERVER_CONFIG, FEED_HEADER_TEXTS, FOLLOW_BUTTON_TEXTS, SPONSORED_TEXTS, matchesAny, matchesExact } from '@/constants';
+import type { ParsedPost, PostSource } from '@/types';
 
 /**
- * Main content script class for Facebook feed cleaning
- * Implements performance-optimized DOM manipulation with MutationObserver
+ * Detect the source of a post (following, suggested, or sponsored)
+ */
+function detectPostSource(postElement: Element): PostSource {
+  // Check for sponsored indicators first
+  const allSpans = postElement.querySelectorAll('span');
+  for (const span of allSpans) {
+    const text = span.textContent?.trim();
+    if (matchesExact(text, SPONSORED_TEXTS)) {
+      return 'sponsored';
+    }
+  }
+
+  // Check for Follow button (indicates suggested post)
+  for (const span of allSpans) {
+    const text = span.textContent?.trim();
+    if (matchesExact(text, FOLLOW_BUTTON_TEXTS)) {
+      return 'suggested';
+    }
+  }
+
+  // Default to following (posts from people you follow)
+  return 'following';
+}
+
+/**
+ * Parse a Facebook post element into structured JSON
+ */
+function parsePost(postElement: Element): ParsedPost {
+  // Try multiple selectors for author name
+  const authorSelectors = [
+    '[data-ad-rendering-role="profile_name"] span',
+    'h4 a span',
+    'h3 a span',
+    'strong a',
+    'a[role="link"] span strong',
+    'h2 span a strong span',
+    'span a strong span',
+  ];
+
+  let author: string | null = null;
+  for (const selector of authorSelectors) {
+    const el = postElement.querySelector(selector);
+    if (el?.textContent?.trim()) {
+      author = el.textContent.trim();
+      break;
+    }
+  }
+
+  // Try multiple selectors for content
+  const contentSelectors = ['[data-ad-rendering-role="story_message"]', '[data-ad-comet-preview="message"]', 'div[dir="auto"]', 'span[dir="auto"]'];
+
+  let content: string | null = null;
+  for (const selector of contentSelectors) {
+    const el = postElement.querySelector(selector);
+    const text = el?.textContent?.trim();
+    if (text && text.length > 20) {
+      content = text.slice(0, 500);
+      break;
+    }
+  }
+
+  // Get post link
+  const postLinkEl = postElement.querySelector('a[href*="?__cft__"], a[href*="/posts/"], a[href*="/permalink/"]') as HTMLAnchorElement;
+  const postLink = postLinkEl?.href || null;
+
+  // Get images
+  const images = Array.from(postElement.querySelectorAll('img[src*="fbcdn"], img[alt]'))
+    .filter((img) => {
+      const src = (img as HTMLImageElement).src;
+      return src && !src.includes('emoji') && !src.includes('static');
+    })
+    .map((img) => (img as HTMLImageElement).src)
+    .slice(0, 5);
+
+  // Get reactions
+  const reactionLabels = Array.from(postElement.querySelectorAll('[aria-label*="reaction"], [aria-label*="like"]'));
+  let totalReactions = '0';
+  for (const el of reactionLabels) {
+    const label = el.getAttribute('aria-label') || '';
+    const match = label.match(/(\d+)/);
+    if (match) {
+      totalReactions = match[1];
+      break;
+    }
+  }
+
+  // Get comments count
+  const commentMatch = postElement.textContent?.match(/(\d+)\s*(comment|bình luận)/i);
+  const comments = commentMatch ? commentMatch[1] : '0';
+
+  // Get shares count
+  const shareMatch = postElement.textContent?.match(/(\d+)\s*(share|chia sẻ)/i);
+  const shares = shareMatch ? shareMatch[1] : '0';
+
+  // Detect post source
+  const source = detectPostSource(postElement);
+
+  return {
+    author,
+    content,
+    postLink,
+    images,
+    reactions: { total: totalReactions, like: '0', love: '0' },
+    comments,
+    shares,
+    source,
+  };
+}
+
+/**
+ * Track posts that have already been logged to avoid duplicates
+ */
+const loggedPosts = new Set<string>();
+
+/**
+ * Find the feed container by looking for h3 with feed header text (multi-language)
+ */
+function findFeedPostsContainer(): Element | null {
+  const h3Elements = document.querySelectorAll('h3');
+
+  for (const h3 of h3Elements) {
+    const text = h3.textContent?.trim();
+    if (matchesAny(text, FEED_HEADER_TEXTS)) {
+
+      const parentDiv = h3.parentElement;
+      if (parentDiv) {
+        const children = parentDiv.children;
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if (child.tagName === 'DIV' && child.getAttribute('aria-hidden') !== 'true') {
+            const postContainers = child.children;
+            if (postContainers.length > 0) {
+              return child;
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Scan and log all posts on the page
+ */
+function scanAndLogPosts(): void {
+  const feedContainer = findFeedPostsContainer();
+
+  let allPosts: Element[] = [];
+
+  if (feedContainer) {
+    allPosts = Array.from(feedContainer.children);
+  } else {
+    const articlePosts = document.querySelectorAll('[role="article"]');
+    allPosts = Array.from(articlePosts);
+  }
+
+  let newPostsLogged = 0;
+
+  allPosts.forEach((post, index) => {
+    const parsed = parsePost(post);
+    const postKey = `post-${index}-${parsed.content?.slice(0, 50) || post.textContent?.slice(0, 50)}`;
+
+    if (!loggedPosts.has(postKey)) {
+      loggedPosts.add(postKey);
+      newPostsLogged++;
+
+      if (parsed.author || parsed.content) {
+        console.log(`[Clarity] 📝 Post ${index + 1}:`);
+        console.log(JSON.stringify(parsed, null, 2));
+      } else {
+        const childCount = post.querySelectorAll('*').length;
+        const textPreview = post.textContent?.slice(0, 200)?.replace(/\s+/g, ' ') || '';
+        console.log(`[Clarity] ⚠️ Post ${index + 1} - Could not parse`);
+        console.log(`[Clarity]    Child elements: ${childCount}, Text: ${textPreview}...`);
+      }
+    }
+  });
+}
+
+/**
+ * Main content script class for Facebook post logging
  */
 class ClarityContentScript {
-  private settings: ExtensionSettings | null = null;
   private observer: MutationObserver | null = null;
   private isInitialized = false;
-  private processingQueue: Set<Element> = new Set();
-  private stats = {
-    reelsRemoved: 0,
-    sponsoredRemoved: 0,
-    suggestedRemoved: 0,
-    totalRemoved: 0,
-  };
+  private scanTimeout: ReturnType<typeof setTimeout> | null = null;
+  private mutationCount = 0;
 
   constructor() {
     this.init();
   }
 
-  /**
-   * Initialize the content script
-   */
-  private async init(): Promise<void> {
-    if (this.isInitialized) return;
+  private init(): void {
+    console.log('[Clarity] 🚀 Initializing...');
 
-    try {
-      // Load settings
-      this.settings = await StorageService.getSettings();
-
-      // Listen for settings changes
-      StorageService.addChangeListener((newSettings) => {
-        this.settings = newSettings;
-        this.reprocessPage();
-      });
-
-      // Start observing DOM changes
-      this.startObserver();
-
-      // Initial cleanup
-      this.cleanupPage();
-
-      this.isInitialized = true;
-      console.log('Clarity for Facebook: Initialized successfully');
-    } catch (error) {
-      console.error('Clarity for Facebook: Initialization failed', error);
+    if (this.isInitialized) {
+      console.log('[Clarity] ⚠️ Already initialized');
+      return;
     }
+
+    // Start observing DOM changes
+    this.startObserver();
+
+    // Initial scan after page loads
+    setTimeout(() => {
+      console.log('[Clarity] 🔍 Running initial post scan...');
+      scanAndLogPosts();
+    }, 3000);
+
+    // Also scan periodically for lazy-loaded content
+    setInterval(() => {
+      const feedContainer = findFeedPostsContainer();
+      const currentPostCount = feedContainer ? feedContainer.children.length : 0;
+      if (currentPostCount > loggedPosts.size) {
+        console.log(`[Clarity] ⏰ Periodic scan: ${currentPostCount} posts in container vs ${loggedPosts.size} logged`);
+        scanAndLogPosts();
+      }
+    }, 3000);
+
+    this.isInitialized = true;
+    console.log('[Clarity] ✅ Initialized successfully');
   }
 
-  /**
-   * Start MutationObserver to watch for new content
-   */
   private startObserver(): void {
     if (this.observer) return;
 
-    const throttledCallback = throttle(
-      this.handleMutations.bind(this),
-      PERFORMANCE_CONFIG.OBSERVER_THROTTLE
-    );
+    console.log('[Clarity] 🔄 Starting MutationObserver...');
 
-    this.observer = new MutationObserver(throttledCallback);
+    this.observer = new MutationObserver((mutations) => {
+      this.mutationCount += mutations.length;
 
-    // Wait for feed container to load
-    const checkFeed = setInterval(() => {
-      const feedContainer = document.querySelector(FACEBOOK_SELECTORS.FEED_CONTAINER);
-      if (feedContainer) {
-        this.observer?.observe(feedContainer, OBSERVER_CONFIG);
-        console.log('Clarity for Facebook: Observer attached to feed');
-        clearInterval(checkFeed);
+      let hasNewContent = false;
+      let addedCount = 0;
+
+      for (const mutation of mutations) {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            addedCount++;
+            const el = node as Element;
+            // Check if this is a div being added (potential post)
+            // Also check if parent is inside a feed container structure
+            if (el.tagName === 'DIV' || el.matches?.('[role="article"]') || el.querySelector?.('[role="article"]')) {
+              hasNewContent = true;
+            }
+          }
+        });
       }
-    }, 1000);
 
-    // Stop checking after 30 seconds
-    setTimeout(() => clearInterval(checkFeed), 30000);
-  }
+      // Trigger scan if new div elements were added (could be new posts)
+      if (hasNewContent && addedCount > 0) {
+        if (this.scanTimeout) clearTimeout(this.scanTimeout);
+        this.scanTimeout = setTimeout(scanAndLogPosts, 1000);
+      }
+    });
 
-  /**
-   * Handle DOM mutations
-   */
-  private handleMutations(mutations: MutationRecord[]): void {
-    const addedNodes: Element[] = [];
-
-    for (const mutation of mutations) {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          addedNodes.push(node as Element);
+    // Observe entire document body
+    if (document.body) {
+      this.observer.observe(document.body, OBSERVER_CONFIG);
+      console.log('[Clarity] ✅ Observer attached to document.body');
+    } else {
+      const waitForBody = setInterval(() => {
+        if (document.body) {
+          this.observer?.observe(document.body, OBSERVER_CONFIG);
+          console.log('[Clarity] ✅ Observer attached to document.body');
+          clearInterval(waitForBody);
         }
-      });
-    }
-
-    if (addedNodes.length > 0) {
-      this.processNodes(addedNodes);
+      }, 100);
     }
   }
 
-  /**
-   * Process nodes in batches for better performance
-   */
-  private processNodes(nodes: Element[]): void {
-    const debouncedProcess = debounce(() => {
-      const batch = Array.from(this.processingQueue).slice(
-        0,
-        PERFORMANCE_CONFIG.MAX_BATCH_SIZE
-      );
-
-      batch.forEach((node) => {
-        this.analyzeAndFilterElement(node);
-        this.processingQueue.delete(node);
-      });
-
-      if (this.processingQueue.size > 0) {
-        debouncedProcess();
-      }
-    }, PERFORMANCE_CONFIG.CLEANUP_DEBOUNCE);
-
-    nodes.forEach((node) => this.processingQueue.add(node));
-    debouncedProcess();
-  }
-
-  /**
-   * Analyze and filter a single element
-   */
-  private analyzeAndFilterElement(element: Element): void {
-    if (!this.settings || isHiddenByExtension(element)) return;
-
-    // Skip if clean mode is off
-    if (!this.settings.cleanMode) return;
-
-    const htmlElement = element as HTMLElement;
-
-    // Check for Reels
-    if (this.settings.removeReels && this.isReelsContent(element)) {
-      const container = this.findPostContainer(element);
-      if (container) {
-        hideElement(container);
-        this.stats.reelsRemoved++;
-        this.stats.totalRemoved++;
-        return;
-      }
-    }
-
-    // Check for Sponsored content
-    if (this.settings.removeSponsored && this.isSponsoredContent(element)) {
-      const container = this.findPostContainer(element);
-      if (container) {
-        hideElement(container);
-        this.stats.sponsoredRemoved++;
-        this.stats.totalRemoved++;
-        return;
-      }
-    }
-
-    // Check for Suggested posts
-    if (this.settings.removeSuggested && this.isSuggestedContent(element)) {
-      const container = this.findPostContainer(element);
-      if (container) {
-        hideElement(container);
-        this.stats.suggestedRemoved++;
-        this.stats.totalRemoved++;
-        return;
-      }
-    }
-
-    // Check for Marketplace
-    if (this.settings.removeMarketplace && this.isMarketplaceContent(element)) {
-      const container = this.findPostContainer(element);
-      if (container) {
-        hideElement(container);
-        this.stats.totalRemoved++;
-        return;
-      }
-    }
-
-    // Check for People You May Know
-    if (this.settings.removePeopleYouMayKnow && this.isPeopleYouMayKnowContent(element)) {
-      hideElement(htmlElement);
-      this.stats.totalRemoved++;
-      return;
-    }
-
-    // Check for Follow suggestions
-    if (this.settings.removeFollowSuggestions && this.isFollowSuggestion(element)) {
-      const container = this.findPostContainer(element);
-      if (container) {
-        hideElement(container);
-        this.stats.totalRemoved++;
-        return;
-      }
-    }
-
-    // Check for Search ads
-    if (this.settings.removeSearchAds && this.isSearchAd(element)) {
-      hideElement(htmlElement);
-      this.stats.totalRemoved++;
-      return;
-    }
-  }
-
-  /**
-   * Check if element is Reels content
-   */
-  private isReelsContent(element: Element): boolean {
-    const text = element.textContent?.toLowerCase() || '';
-    const hasReelsText = text.includes('reels') || text.includes('reel');
-    const hasReelsLink = element.querySelector('a[href*="/reel/"]') !== null;
-    const hasReelsAria = element.querySelector('[aria-label*="Reels" i]') !== null;
-
-    return hasReelsText || hasReelsLink || hasReelsAria;
-  }
-
-  /**
-   * Check if element is sponsored content
-   */
-  private isSponsoredContent(element: Element): boolean {
-    const sponsoredKeywords = [
-      'sponsored',
-      'được tài trợ',
-      'promocionado',
-      'gesponsert',
-      'sponsorisé',
-      'sponsorizzato',
-    ];
-
-    return containsText(element, sponsoredKeywords);
-  }
-
-  /**
-   * Check if element is suggested content
-   */
-  private isSuggestedContent(element: Element): boolean {
-    const suggestedKeywords = [
-      'suggested for you',
-      'gợi ý cho bạn',
-      'sugerido para ti',
-      'vorgeschlagen für dich',
-      'suggéré pour vous',
-      'suggerito per te',
-    ];
-
-    return containsText(element, suggestedKeywords);
-  }
-
-  /**
-   * Check if element is marketplace content
-   */
-  private isMarketplaceContent(element: Element): boolean {
-    return (
-      element.querySelector('a[href*="/marketplace/"]') !== null ||
-      element.querySelector('[data-pagelet*="Marketplace"]') !== null
-    );
-  }
-
-  /**
-   * Check if element is "People You May Know"
-   */
-  private isPeopleYouMayKnowContent(element: Element): boolean {
-    const pymkKeywords = [
-      'people you may know',
-      'những người bạn có thể biết',
-      'personas que quizás conozcas',
-      'personen, die du kennen könntest',
-      'personnes que vous connaissez peut-être',
-      'persone che potresti conoscere',
-    ];
-
-    return containsText(element, pymkKeywords);
-  }
-
-  /**
-   * Check if element is follow suggestion
-   */
-  private isFollowSuggestion(element: Element): boolean {
-    const followButton = element.querySelector(
-      'div[aria-label="Follow" i], div[aria-label="Theo dõi" i]'
-    );
-    const suggestedText = containsText(element, ['suggested', 'gợi ý']);
-
-    return followButton !== null && suggestedText;
-  }
-
-  /**
-   * Check if element is search ad
-   */
-  private isSearchAd(element: Element): boolean {
-    const isInSearch = window.location.href.includes('/search/');
-    const isSponsored = this.isSponsoredContent(element);
-
-    return isInSearch && isSponsored;
-  }
-
-  /**
-   * Find the post container for an element
-   */
-  private findPostContainer(element: Element): HTMLElement | null {
-    // Try to find the main post container
-    const container = findClosestParent(
-      element,
-      (el) =>
-        el.hasAttribute('data-pagelet') &&
-        el.getAttribute('data-pagelet')?.startsWith('FeedUnit') === true,
-      15
-    );
-
-    return container as HTMLElement | null;
-  }
-
-  /**
-   * Clean up the entire page (initial load or reprocess)
-   */
-  private cleanupPage(): void {
-    if (!this.settings?.cleanMode) {
-      this.showAllHiddenElements();
-      return;
-    }
-
-    const allElements = document.querySelectorAll('div, article, section');
-    this.processNodes(Array.from(allElements));
-  }
-
-  /**
-   * Reprocess the entire page when settings change
-   */
-  private reprocessPage(): void {
-    this.showAllHiddenElements();
-    this.cleanupPage();
-  }
-
-  /**
-   * Show all previously hidden elements
-   */
-  private showAllHiddenElements(): void {
-    const hiddenElements = document.querySelectorAll('[data-clarity-hidden="true"]');
-    hiddenElements.forEach((el) => showElement(el as HTMLElement));
-  }
-
-  /**
-   * Get current statistics
-   */
   public getStats() {
-    return { ...this.stats };
-  }
-
-  /**
-   * Reset statistics
-   */
-  public resetStats(): void {
-    this.stats = {
-      reelsRemoved: 0,
-      sponsoredRemoved: 0,
-      suggestedRemoved: 0,
-      totalRemoved: 0,
+    return {
+      totalLogged: loggedPosts.size,
+      currentPosts: document.querySelectorAll('[role="article"], [data-pagelet^="FeedUnit"]').length,
     };
   }
 
-  /**
-   * Clean up and disconnect observer
-   */
-  public destroy(): void {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = null;
-    }
-    this.showAllHiddenElements();
-    this.isInitialized = false;
+  public rescan(): void {
+    console.log('[Clarity] 🔄 Manual rescan triggered');
+    scanAndLogPosts();
   }
 }
 
@@ -387,9 +295,14 @@ browser.runtime.onMessage.addListener((message) => {
   if (message.type === 'GET_STATS') {
     return Promise.resolve(clarityScript.getStats());
   }
-  if (message.type === 'RESET_STATS') {
-    clarityScript.resetStats();
+  if (message.type === 'RESCAN') {
+    clarityScript.rescan();
     return Promise.resolve({ success: true });
   }
   return Promise.resolve();
 });
+
+// Expose to window for debugging
+(window as unknown as { clarityScript: ClarityContentScript }).clarityScript = clarityScript;
+
+console.log('[Clarity] 💡 Tip: Run clarityScript.rescan() in console to manually scan posts');

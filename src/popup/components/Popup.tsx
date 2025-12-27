@@ -31,8 +31,8 @@ export const Popup: React.FC = () => {
       const loadedSettings = await StorageService.getSettings();
       setSettings(loadedSettings);
     } catch (error) {
+      console.error('[Popup] ❌ Failed to load settings:', error);
       showMessage('error', 'Failed to load settings');
-      console.error('Failed to load settings:', error);
     } finally {
       setLoading(false);
     }
@@ -58,8 +58,8 @@ export const Popup: React.FC = () => {
       await StorageService.saveSettings(newSettings);
       setSettings(newSettings);
     } catch (error) {
+      console.error('[Popup] ❌ Failed to save settings:', error);
       showMessage('error', 'Failed to save settings');
-      console.error('Failed to save settings:', error);
     }
   };
 
@@ -147,10 +147,7 @@ export const Popup: React.FC = () => {
       <div className="popup-container flex items-center justify-center bg-gray-50">
         <div className="text-center text-red-600">
           <p>Failed to load settings</p>
-          <button
-            onClick={loadSettings}
-            className="mt-4 btn-primary"
-          >
+          <button onClick={loadSettings} className="mt-4 btn-primary">
             Retry
           </button>
         </div>
@@ -163,11 +160,7 @@ export const Popup: React.FC = () => {
 
   return (
     <div className="popup-container bg-gray-50 flex flex-col">
-      <Header
-        onExport={handleExport}
-        onImport={handleImport}
-        onReset={handleReset}
-      />
+      <Header onExport={handleExport} onImport={handleImport} onReset={handleReset} />
 
       {/* Message notification */}
       {message && (
@@ -218,8 +211,8 @@ export const Popup: React.FC = () => {
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800">
           <p className="font-medium mb-1">💡 Pro Tip:</p>
           <p>
-            Your settings are automatically synced across all your devices where
-            you're signed in to your browser.
+            Your settings are automatically synced across all your devices where you're
+            signed in to your browser.
           </p>
         </div>
       </div>
@@ -228,4 +221,3 @@ export const Popup: React.FC = () => {
     </div>
   );
 };
-

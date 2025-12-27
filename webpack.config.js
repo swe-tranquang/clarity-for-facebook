@@ -11,7 +11,7 @@ module.exports = (env, argv) => {
   return {
     mode: isDevelopment ? 'development' : 'production',
     devtool: isDevelopment ? 'inline-source-map' : false,
-    
+
     entry: {
       popup: './src/popup/index.tsx',
       content: './src/content/contentScript.ts',
@@ -40,11 +40,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'postcss-loader',
-          ],
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
         },
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/i,
@@ -93,12 +89,19 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: !isDevelopment,
       splitChunks: {
-        chunks: 'all',
+        chunks(chunk) {
+          // Content scripts must be self-contained (no separate vendor chunks)
+          // because Chrome extensions can't load chunk dependencies in content scripts
+          return chunk.name !== 'content' && chunk.name !== 'background';
+        },
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor',
-            chunks: 'all',
+            chunks(chunk) {
+              // Only split vendor for popup, not for content or background scripts
+              return chunk.name === 'popup';
+            },
           },
         },
       },
@@ -111,4 +114,3 @@ module.exports = (env, argv) => {
     },
   };
 };
-
