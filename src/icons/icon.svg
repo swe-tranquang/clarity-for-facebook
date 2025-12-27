@@ -1,0 +1,78 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Definitions for gradients and effects -->
+    <defs>
+        <!-- Background gradient -->
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#E3F2FD"/>
+            <stop offset="100%" style="stop-color:#BBDEFB"/>
+        </linearGradient>
+        
+        <!-- Facebook blue gradient -->
+        <linearGradient id="fbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1877F2"/>
+            <stop offset="100%" style="stop-color:#0C63E4"/>
+        </linearGradient>
+        
+        <!-- Clarity line gradient -->
+        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.95"/>
+            <stop offset="50%" style="stop-color:#FFFFFF;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.95"/>
+        </linearGradient>
+        
+        <!-- Shadow filter -->
+        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+            <feOffset dx="0" dy="2" result="offsetblur"/>
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+        
+        <!-- Glow effect for clarity line -->
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    
+    <!-- Background with rounded corners -->
+    <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bgGradient)"/>
+    
+    <!-- Subtle inner shadow for depth -->
+    <rect x="32" y="32" width="448" height="448" rx="112" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="2"/>
+    
+    <!-- Facebook logo with gradient and shadow -->
+    <path fill-rule="evenodd" clip-rule="evenodd" 
+          d="M480 144C480 82.1371 429.863 32 368 32H144C82.1371 32 32 82.1371 32 144V368C32 429.863 82.1371 480 144 480H368C429.863 480 480 429.863 480 368V144ZM351.07 174.67H301.81V127.77C301.81 114.56 314.96 113.02 323.19 113.02H348.84V67.84H286.49C218.57 67.84 201.18 114.52 201.18 163.3V174.67H168V233.48H201.18V415.49C230.85 426.77 266.42 426.59 299.58 415.28V233.48H342.37L351.07 174.67Z" 
+          fill="url(#fbGradient)" 
+          filter="url(#shadow)"/>
+    
+    <!-- Clarity diagonal line with glow effect -->
+    <path d="M120 440L440 120" 
+          stroke="url(#lineGradient)" 
+          stroke-width="36" 
+          stroke-linecap="round"
+          filter="url(#glow)"
+          opacity="0.9"/>
+    
+    <!-- Additional thin white line for extra clarity effect -->
+    <path d="M120 440L440 120" 
+          stroke="white" 
+          stroke-width="32" 
+          stroke-linecap="round"
+          opacity="0.95"/>
+    
+    <!-- Subtle highlight on top edge -->
+    <rect x="32" y="32" width="448" height="224" rx="112" 
+          fill="url(#bgGradient)" 
+          opacity="0.3"
+          style="mix-blend-mode: overlay"/>
+</svg>

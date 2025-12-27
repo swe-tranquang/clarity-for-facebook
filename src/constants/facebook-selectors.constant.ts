@@ -1,11 +1,3 @@
-/**
- * Multi-language constants for Facebook selectors
- * These cover different language regions
- */
-
-/**
- * Feed header text variations across different languages
- */
 export const FEED_HEADER_TEXTS = [
   // English
   'feed posts',
@@ -45,9 +37,6 @@ export const FEED_HEADER_TEXTS = [
   'beranda',
 ];
 
-/**
- * Follow button text variations (indicates suggested posts)
- */
 export const FOLLOW_BUTTON_TEXTS = [
   // English
   'follow',
@@ -75,9 +64,6 @@ export const FOLLOW_BUTTON_TEXTS = [
   'ikuti',
 ];
 
-/**
- * Sponsored post indicators
- */
 export const SPONSORED_TEXTS = [
   // English
   'sponsored',
@@ -112,70 +98,112 @@ export const SPONSORED_TEXTS = [
   'bersponsor',
 ];
 
-/**
- * "Suggested for you" text variations (indicates suggested posts)
- */
 export const SUGGESTED_FOR_YOU_TEXTS = [
   // English
   'suggested for you',
-  'your group suggestions',
   // Vietnamese
   'gợi ý cho bạn',
   'đề xuất cho bạn',
-  'gợi ý nhóm cho bạn',
   // Chinese (Simplified)
   '为你推荐',
   '推荐给你',
-  '你的群组推荐',
   // Chinese (Traditional)
   '為你推薦',
   '推薦給你',
-  '你的社團推薦',
   // Japanese
   'おすすめ',
   'あなたへのおすすめ',
-  'おすすめのグループ',
   // Korean
   '회원님을 위한 추천',
   '추천',
-  '그룹 추천',
   // Spanish
   'sugerido para ti',
   'sugerencias para ti',
-  'sugerencias de grupos',
   // French
   'suggestions pour vous',
   'suggéré pour vous',
-  'suggestions de groupes',
   // German
   'vorschläge für dich',
   'für dich vorgeschlagen',
-  'gruppenvorschläge',
   // Portuguese
   'sugestão para você',
   'sugerido para você',
-  'sugestões de grupos',
   // Thai
   'แนะนำสำหรับคุณ',
-  'กลุ่มแนะนำของคุณ',
   // Indonesian
   'disarankan untuk anda',
   'saran untuk anda',
-  'saran grup anda',
 ];
 
-/**
- * Check if text matches any of the provided patterns (case-insensitive)
- */
+export const GROUP_SUGGESTIONS_TEXTS = [
+  // English
+  'your group suggestions',
+  'suggested groups',
+  // Vietnamese
+  'gợi ý nhóm cho bạn',
+  'nhóm gợi ý',
+  // Chinese (Simplified)
+  '你的群组推荐',
+  '推荐群组',
+  // Chinese (Traditional)
+  '你的社團推薦',
+  '推薦社團',
+  // Japanese
+  'おすすめのグループ',
+  // Korean
+  '그룹 추천',
+  // Spanish
+  'sugerencias de grupos',
+  'grupos sugeridos',
+  // French
+  'suggestions de groupes',
+  'groupes suggérés',
+  // German
+  'gruppenvorschläge',
+  // Portuguese
+  'sugestões de grupos',
+  'grupos sugeridos',
+  // Thai
+  'กลุ่มแนะนำของคุณ',
+  // Indonesian
+  'saran grup anda',
+  'grup yang disarankan',
+];
+
+export const PEOPLE_YOU_MAY_KNOW_TEXTS = [
+  // English
+  'people you may know',
+  // Vietnamese
+  'những người bạn có thể biết',
+  'người bạn có thể biết',
+  // Chinese (Simplified)
+  '你可能认识的人',
+  // Chinese (Traditional)
+  '你可能認識的朋友',
+  // Japanese
+  '知り合いかも',
+  // Korean
+  '알 수도 있는 사람',
+  // Spanish
+  'personas que quizá conozcas',
+  // French
+  'personnes que vous connaissez peut-être',
+  // German
+  'personen, die du kennen könntest',
+  // Portuguese
+  'pessoas que você talvez conheça',
+  // Thai
+  'คนที่คุณอาจรู้จัก',
+  // Indonesian
+  'orang yang mungkin anda kenal',
+];
+
 export function matchesAny(text: string | null | undefined, patterns: string[]): boolean {
   if (!text) return false;
   const lowerText = text.toLowerCase().trim();
   return patterns.some((pattern) => lowerText.includes(pattern.toLowerCase()));
 }
 
-/**
- * Check if text exactly matches any of the provided patterns (case-insensitive)
- */
 export function matchesExact(text: string | null | undefined, patterns: string[]): boolean {
   if (!text) return false;
   const lowerText = text.toLowerCase().trim();

@@ -1,15 +1,17 @@
-import { FEED_HEADER_TEXTS, FOLLOW_BUTTON_TEXTS, SPONSORED_TEXTS, SUGGESTED_FOR_YOU_TEXTS, matchesAny, matchesExact } from '@/constants';
+import {
+  FEED_HEADER_TEXTS,
+  FOLLOW_BUTTON_TEXTS,
+  SPONSORED_TEXTS,
+  SUGGESTED_FOR_YOU_TEXTS,
+  GROUP_SUGGESTIONS_TEXTS,
+  PEOPLE_YOU_MAY_KNOW_TEXTS,
+  matchesAny,
+  matchesExact,
+} from '@/constants';
 import type { ParsedPost, PostSource } from '@/types';
 
-/**
- * Service for parsing Facebook posts
- */
 export class PostParserService {
-  /**
-   * Detect the source of a post (following, suggested, sponsored, or reels)
-   */
   detectPostSource(postElement: Element): PostSource {
-    // Check for Reels first (h3 with "Reels" text)
     const h3Elements = postElement.querySelectorAll('h3');
     for (const h3 of h3Elements) {
       const text = h3.textContent?.trim();
@@ -20,7 +22,6 @@ export class PostParserService {
 
     const allSpans = postElement.querySelectorAll('span');
 
-    // Check for sponsored indicators
     for (const span of allSpans) {
       const text = span.textContent?.trim();
       if (matchesExact(text, SPONSORED_TEXTS)) {
@@ -28,7 +29,20 @@ export class PostParserService {
       }
     }
 
-    // Check for "Suggested for you" text
+    for (const span of allSpans) {
+      const text = span.textContent?.trim();
+      if (matchesAny(text, PEOPLE_YOU_MAY_KNOW_TEXTS)) {
+        return 'people_suggestion';
+      }
+    }
+
+    for (const span of allSpans) {
+      const text = span.textContent?.trim();
+      if (matchesAny(text, GROUP_SUGGESTIONS_TEXTS)) {
+        return 'group_suggestion';
+      }
+    }
+
     for (const span of allSpans) {
       const text = span.textContent?.trim();
       if (matchesExact(text, SUGGESTED_FOR_YOU_TEXTS)) {
@@ -36,7 +50,6 @@ export class PostParserService {
       }
     }
 
-    // Check for Follow button (indicates suggested post)
     for (const span of allSpans) {
       const text = span.textContent?.trim();
       if (matchesExact(text, FOLLOW_BUTTON_TEXTS)) {
@@ -44,13 +57,9 @@ export class PostParserService {
       }
     }
 
-    // Default to following (posts from people you follow)
     return 'following';
   }
 
-  /**
-   * Parse a Facebook post element into structured JSON
-   */
   parsePost(postElement: Element): ParsedPost {
     // Try multiple selectors for author name
     const authorSelectors = [

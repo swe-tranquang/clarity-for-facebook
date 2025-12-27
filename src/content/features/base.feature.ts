@@ -1,5 +1,4 @@
-import type { FeatureKey } from '@/types';
-import type { FeatureContext } from '../types';
+import type { FeatureKey, FeatureContext } from '@/types';
 
 /**
  * Base class for all content filtering features

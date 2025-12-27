@@ -1,5 +1,4 @@
-import type { FeatureKey } from '@/types';
-import type { FeatureContext } from '../types';
+import type { FeatureKey, FeatureContext } from '@/types';
 import { BaseFeature } from './base.feature';
 
 /**
@@ -12,7 +11,6 @@ export class StoriesFeature extends BaseFeature {
   readonly name = 'Remove Stories';
 
   shouldProcess(_context: FeatureContext): boolean {
-    // Stories are handled via CSS, no post processing needed
     return false;
   }
 

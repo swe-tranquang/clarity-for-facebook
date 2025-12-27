@@ -1,11 +1,5 @@
-/**
- * Source of the post in Facebook feed
- */
-export type PostSource = 'following' | 'suggested' | 'sponsored' | 'reels';
+export type PostSource = 'following' | 'suggested' | 'sponsored' | 'reels' | 'people_suggestion' | 'group_suggestion';
 
-/**
- * Interface for parsed Facebook post data
- */
 export interface ParsedPost {
   author: string | null;
   content: string | null;
