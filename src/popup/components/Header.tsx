@@ -13,10 +13,8 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onImport, onReset }) =
   return (
     <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-4 shadow-lg">
       <div className="flex items-center space-x-3 mb-5">
-        <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+          <img src="/icons/icon.svg" alt="Clarity" className="w-full h-full object-contain" />
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">Clarity for Facebook</h1>
