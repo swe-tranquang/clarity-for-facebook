@@ -7,6 +7,7 @@ export {
   SUGGESTED_FOR_YOU_TEXTS,
   GROUP_SUGGESTIONS_TEXTS,
   PEOPLE_YOU_MAY_KNOW_TEXTS,
+  STORIES_ARIA_LABELS,
   matchesAny,
   matchesExact,
 } from './facebook-selectors.constant';

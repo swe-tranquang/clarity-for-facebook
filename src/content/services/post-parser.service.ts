@@ -11,6 +11,29 @@ import {
 import type { ParsedPost, PostSource } from '@/types';
 
 export class PostParserService {
+  private extractVisibleText(element: Element): string {
+    const bTags = element.querySelectorAll('b');
+    if (bTags.length > 0) {
+      const visibleText = Array.from(bTags)
+        .filter((b) => {
+          const hasNestedB = b.querySelector('b') !== null;
+          if (hasNestedB) return false;
+
+          const style = b.getAttribute('style') || '';
+          return !style.includes('display: none') && !style.includes('display:none');
+        })
+        .map((b) => b.textContent || '')
+        .join('');
+
+      if (visibleText.trim()) {
+        return visibleText.trim();
+      }
+    }
+
+    // Fallback to normal textContent
+    return element.textContent?.trim() || '';
+  }
+
   detectPostSource(postElement: Element): PostSource {
     const h3Elements = postElement.querySelectorAll('h3');
     for (const h3 of h3Elements) {
@@ -23,7 +46,7 @@ export class PostParserService {
     const allSpans = postElement.querySelectorAll('span');
 
     for (const span of allSpans) {
-      const text = span.textContent?.trim();
+      const text = this.extractVisibleText(span);
       if (matchesExact(text, SPONSORED_TEXTS)) {
         return 'sponsored';
       }
