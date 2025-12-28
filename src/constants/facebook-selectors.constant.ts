@@ -34,6 +34,7 @@ export const FEED_HEADER_TEXTS = [
   'โพสต์',
   'ฟีด',
   // Indonesian
+  'postingan kabar',
   'postingan',
   'beranda',
 ];

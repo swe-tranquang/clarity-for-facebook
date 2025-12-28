@@ -38,7 +38,7 @@ export class PostParserService {
     const h3Elements = postElement.querySelectorAll('h3');
     for (const h3 of h3Elements) {
       const text = h3.textContent?.trim();
-      if (text === 'Reels') {
+      if (text?.toLowerCase() === 'reels') {
         return 'reels';
       }
     }
@@ -199,7 +199,6 @@ export class PostParserService {
     const feedContainer = this.findFeedContainer();
 
     if (feedContainer) {
-      console.log('[Clarity] 📦 Feed container found, children:', feedContainer.children.length);
       // Filter out empty or very small elements
       return Array.from(feedContainer.children).filter((el) => {
         // Must have some content
