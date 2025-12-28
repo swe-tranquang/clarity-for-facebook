@@ -1,10 +1,9 @@
 export const FEED_HEADER_TEXTS = [
+  'feed',
   // English
   'feed posts',
-  'feeds',
   // Vietnamese
-  'bài viết',
-  'bảng tin',
+  'bài viết trên bảng feed',
   // Chinese (Simplified)
   '动态',
   '帖子',
@@ -18,6 +17,7 @@ export const FEED_HEADER_TEXTS = [
   '피드',
   '게시물',
   // Spanish
+  'publicaciones del feed',
   'publicaciones',
   'noticias',
   // French
@@ -27,6 +27,7 @@ export const FEED_HEADER_TEXTS = [
   'beiträge',
   'news feed',
   // Portuguese
+  'publicações do feed',
   'publicações',
   'feed de notícias',
   // Thai
@@ -153,6 +154,7 @@ export const GROUP_SUGGESTIONS_TEXTS = [
   // Korean
   '그룹 추천',
   // Spanish
+  'tus sugerencias de grupos',
   'sugerencias de grupos',
   'grupos sugeridos',
   // French
@@ -161,6 +163,7 @@ export const GROUP_SUGGESTIONS_TEXTS = [
   // German
   'gruppenvorschläge',
   // Portuguese
+  'as tuas sugestões de grupos',
   'sugestões de grupos',
   'grupos sugeridos',
   // Thai
@@ -191,11 +194,40 @@ export const PEOPLE_YOU_MAY_KNOW_TEXTS = [
   // German
   'personen, die du kennen könntest',
   // Portuguese
+  'pessoas que talvez conheças',
   'pessoas que você talvez conheça',
   // Thai
   'คนที่คุณอาจรู้จัก',
   // Indonesian
   'orang yang mungkin anda kenal',
+];
+
+export const STORIES_ARIA_LABELS = [
+  // English
+  'Stories',
+  'stories tray',
+  // Vietnamese
+  'Tin',
+  // Chinese (Simplified)
+  '快拍',
+  // Chinese (Traditional)
+  '限時動態',
+  // Japanese
+  'ストーリーズ',
+  // Korean
+  '스토리',
+  // Spanish
+  'Historias',
+  // French
+  'Stories',
+  // German
+  'Storys',
+  // Portuguese
+  'Histórias',
+  // Thai
+  'เรื่องราว',
+  // Indonesian
+  'Cerita',
 ];
 
 export function matchesAny(text: string | null | undefined, patterns: string[]): boolean {

@@ -40,3 +40,5 @@ yarn-error.log*
 *.xpi
 *.zip
 
+.resources
+.dom

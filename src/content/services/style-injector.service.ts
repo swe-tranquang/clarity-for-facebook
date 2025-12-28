@@ -1,3 +1,5 @@
+import { STORIES_ARIA_LABELS } from '@/constants';
+
 export class StyleInjectorService {
   private storiesStyleElement: HTMLStyleElement | null = null;
 
@@ -17,7 +19,9 @@ export class StyleInjectorService {
         this.storiesStyleElement.id = 'clarity-stories-style';
         document.head.appendChild(this.storiesStyleElement);
       }
-      this.storiesStyleElement.textContent = '[aria-label="Stories"] { display: none !important; }';
+      
+      const selectors = STORIES_ARIA_LABELS.map((label: string) => `[aria-label="${label}"]`).join(', ');
+      this.storiesStyleElement.textContent = `${selectors} { display: none !important; }`;
     } else {
       if (this.storiesStyleElement) {
         this.storiesStyleElement.textContent = '';

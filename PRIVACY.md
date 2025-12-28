@@ -42,7 +42,7 @@ We may update this privacy policy from time to time. Any changes will be posted 
 For questions or concerns about this privacy policy, please contact:
 
 - GitHub: https://github.com/swe-tranquang/clarity-for-facebook/issues
-- Email: [your-email]
+- Email: swe-tranquang@gmail.com
 
 ## Your Rights
 
